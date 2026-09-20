@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        showStandardStreams = true
+    }
+}
+
+tasks.register('runAllTests') {
+    group = 'verification'
+    description = 'Runs all JUnit tests in the project.'
+    dependsOn tasks.test
+}
+
+tasks.register('testRunFinished') {
+    group = 'verification'
+    description = 'Prints a message after all tests are completed.'
+    dependsOn tasks.named('runAllTests')
+    doLast {
+        println 'Test run is over'
+    }
+}
