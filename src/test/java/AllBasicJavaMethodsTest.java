@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -9,35 +10,46 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Tag("task2")
 public class AllBasicJavaMethodsTest {
 
     private static final Random RANDOM = new Random();
 
-    @Test
+    @RepeatedTest(10)
     void isEvenTest() {
         int n = RANDOM.nextInt(201) - 100;
-        check("isEven", BasicJavaTasks.isEven(n), n % 2 == 0);
+        boolean expected = n % 2 == 0;
+        boolean actual = BasicJavaTasks.isEven(n);
+        assertEquals(expected, actual, "isEven: expected=" + expected + ", actual=" + actual + ", n=" + n);
     }
 
-    @RepeatedTest(3)
+    @RepeatedTest(10)
     void checkAccessTest() {
         int age = RANDOM.nextInt(100);
-        check("checkAccess", BasicJavaTasks.checkAccess(age), age > 18 ? "Allowed" : "Denied");
+        String expected = age > 18 ? "Allowed" : "Denied";
+        String actual = BasicJavaTasks.checkAccess(age);
+        assertEquals(expected, actual, "checkAccess: expected=" + expected + ", actual=" + actual + ", age=" + age);
     }
 
     @ParameterizedTest
     @MethodSource("gradeScores")
     void getGradeTest(int score) {
-        check("getGrade", BasicJavaTasks.getGrade(score), expectedGrade(score));
+        String expected = expectedGrade(score);
+        String actual = BasicJavaTasks.getGrade(score);
+        assertEquals(expected, actual, "getGrade: expected=" + expected + ", actual=" + actual + ", score=" + score);
     }
 
-    @Test
+    @RepeatedTest(10)
     void isPositiveTest() {
         int n = RANDOM.nextInt(201) - 100;
-        check("isPositive", BasicJavaTasks.isPositive(n), n >= 0);
+        boolean expected = n >= 0;
+        boolean actual = BasicJavaTasks.isPositive(n);
+        assertEquals(expected, actual, "isPositive: expected=" + expected + ", actual=" + actual + ", n=" + n);
     }
 
-    @Test
+    @RepeatedTest(10)
     void blastOffTest() {
         int start = 1 + RANDOM.nextInt(10);
         StringBuilder expected = new StringBuilder();
@@ -46,24 +58,29 @@ public class AllBasicJavaMethodsTest {
             if (i > 1) expected.append(" ");
         }
         expected.append(" Поехали!");
-        check("blastOff", BasicJavaTasks.blastOff(start), expected.toString());
+        String actual = BasicJavaTasks.blastOff(start);
+        assertEquals(expected.toString(), actual, "blastOff: expected=" + expected + ", actual=" + actual + ", start=" + start);
     }
 
-    @Test
+    @RepeatedTest(10)
     void sumToNTest() {
         int n = RANDOM.nextInt(20);
         int expected = n * (n + 1) / 2;
-        check("sumToN", BasicJavaTasks.sumToN(n), expected);
+        int actual = BasicJavaTasks.sumToN(n);
+        assertEquals(expected, actual, "sumToN: expected=" + expected + ", actual=" + actual + ", n=" + n);
     }
 
-    @Test
+    @RepeatedTest(10)
     void hasBugTest() {
-        String[] messages = {"OK", "Warning", RANDOM.nextBoolean() ? "Bug" : "Info"};
+        String[] messages = RANDOM.nextBoolean()
+                ? new String[]{"OK", "Warning", "Bug"}
+                : new String[]{"OK", "Warning", "Info"};
         boolean expected = Arrays.stream(messages).anyMatch(s -> s.equalsIgnoreCase("Bug"));
-        check("hasBug", BasicJavaTasks.hasBug(messages), expected);
+        boolean actual = BasicJavaTasks.hasBug(messages);
+        assertEquals(expected, actual, "hasBug: expected=" + expected + ", actual=" + actual + ", messages=" + Arrays.toString(messages));
     }
 
-    @Test
+    @RepeatedTest(10)
     void getEvenInRangeTest() {
         int start = RANDOM.nextInt(10);
         int end = start + RANDOM.nextInt(10);
@@ -74,41 +91,48 @@ public class AllBasicJavaMethodsTest {
                 expected.append(i);
             }
         }
-        check("getEvenInRange", BasicJavaTasks.getEvenInRange(start, end), expected.toString());
+        String actual = BasicJavaTasks.getEvenInRange(start, end);
+        assertEquals(expected.toString(), actual, "getEvenInRange: expected=" + expected + ", actual=" + actual + ", range=" + start + ".." + end);
     }
 
-    @Test
+    @RepeatedTest(10)
     void findMaxTest() {
         int[] arr = RANDOM.ints(5, -100, 101).toArray();
-        int expected = Arrays.stream(arr).max().getAsInt();
-        check("findMax", BasicJavaTasks.findMax(arr), expected);
+        int expected = Arrays.stream(arr).max().orElseThrow();
+        int actual = BasicJavaTasks.findMax(arr);
+        assertEquals(expected, actual, "findMax: expected=" + expected + ", actual=" + actual + ", array=" + Arrays.toString(arr));
     }
 
-    @Test
+    @RepeatedTest(10)
     void reverseTest() {
         String[] arr = {"One", "Two", "Three", "Four"};
         String[] expected = {"Four", "Three", "Two", "One"};
-        check("reverse", Arrays.toString(BasicJavaTasks.reverse(arr)), Arrays.toString(expected));
+        String[] actual = BasicJavaTasks.reverse(arr);
+        assertEquals(Arrays.toString(expected), Arrays.toString(actual), "reverse: expected=" + Arrays.toString(expected) + ", actual=" + Arrays.toString(actual));
     }
 
-    @Test
+    @RepeatedTest(10)
     void calcAverageTest() {
         List<Integer> list = RANDOM.ints(5, 0, 101).boxed().toList();
         double expected = list.stream().mapToInt(Integer::intValue).average().orElse(0);
-        check("calcAverage", BasicJavaTasks.calcAverage(list), expected);
+        double actual = BasicJavaTasks.calcAverage(list);
+        assertEquals(expected, actual, 0.000001, "calcAverage: expected=" + expected + ", actual=" + actual + ", list=" + list);
     }
 
-    @Test
+    @RepeatedTest(10)
     void removeSpecificNameTest() {
         List<String> list = new ArrayList<>(List.of("Ivan", "Petr", "Anna", "Ivan"));
-        String name = "Ivan";
-        List<String> expected = new ArrayList<>(List.of("Petr", "Anna"));
-        check("removeSpecificName", BasicJavaTasks.removeSpecificName(list, name), expected);
+        String name = RANDOM.nextBoolean() ? "Ivan" : "Petr";
+        List<String> expected = new ArrayList<>();
+        for (String item : list) {
+            if (!item.equals(name)) expected.add(item);
+        }
+        List<String> actual = BasicJavaTasks.removeSpecificName(list, name);
+        assertEquals(expected, actual, "removeSpecificName: expected=" + expected + ", actual=" + actual + ", nameToRemove=" + name);
     }
 
     static Stream<Integer> gradeScores() {
-        return Stream.of(RANDOM.nextInt(101), RANDOM.nextInt(101), RANDOM.nextInt(101),
-                RANDOM.nextInt(101), RANDOM.nextInt(101));
+        return Stream.generate(() -> RANDOM.nextInt(101)).limit(10);
     }
 
     private static String expectedGrade(int score) {
@@ -117,16 +141,5 @@ public class AllBasicJavaMethodsTest {
         if (score <= 60) return "C";
         if (score <= 80) return "B";
         return "A";
-    }
-
-    private static void check(String method, Object actual, Object expected) {
-        System.out.println("========================Test method start");
-        if (expected.equals(actual)) {
-            System.out.println(method + ": TEST PASSED");
-        } else {
-            System.out.println(method + ": TEST FAILED");
-        }
-        System.out.println("Test method end");
-        System.out.println("========================");
     }
 }
