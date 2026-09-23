@@ -19,8 +19,47 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+tasks.named('test', Test) {
+    useJUnitPlatform {
+        excludeTags 'negative'
+    }
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        showStandardStreams = true
+    }
+}
+
+tasks.register('task1Tests', Test) {
+    group = 'verification'
+    description = 'Runs Task 1 assertion tests, excluding the intentional failure.'
+    useJUnitPlatform {
+        includeTags 'task1'
+        excludeTags 'negative'
+    }
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        showStandardStreams = true
+    }
+}
+
+tasks.register('runNegativeTest', Test) {
+    group = 'verification'
+    description = 'Runs the intentionally failing assertion test from Task 1.'
+    useJUnitPlatform {
+        includeTags 'negative'
+    }
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        showStandardStreams = true
+    }
+}
+
+tasks.register('task2Tests', Test) {
+    group = 'verification'
+    description = 'Runs all 12 Basic Java method tests with informative assertions.'
+    useJUnitPlatform {
+        includeTags 'task2'
+    }
     testLogging {
         events 'passed', 'failed', 'skipped'
         showStandardStreams = true
@@ -29,13 +68,13 @@ tasks.named('test') {
 
 tasks.register('runAllTests') {
     group = 'verification'
-    description = 'Runs all JUnit tests in the project.'
-    dependsOn tasks.test
+    description = 'Runs Task 1 and Task 2 tests.'
+    dependsOn tasks.named('task1Tests'), tasks.named('task2Tests')
 }
 
 tasks.register('testRunFinished') {
     group = 'verification'
-    description = 'Prints a message after all tests are completed.'
+    description = 'Runs the test suite and prints a completion message.'
     dependsOn tasks.named('runAllTests')
     doLast {
         println 'Test run is over'
